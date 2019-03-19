@@ -2,3 +2,41 @@
 
 List of user-contributed modelbuilder models
 
+```{r, echo = FALSE}
+library(modelbuilder)
+library(purrr)
+library(magrittr)
+#Get list of all models (Rdata files) in the mbmodel folder
+files = list.files(path = "../mbmodels/", recursive=FALSE, pattern = "\\.rds$", full.names = TRUE)
+#data frame to contain content for all model files
+
+df = data.frame(Title = rep(0,length(files)))
+df$ShortDesc = "0"
+df$LongDesc = "0"
+df$Author = "0"
+df$Date = "0"
+                
+#allmodels <- files %>% purrr::map(readRDS) 
+#allmodels %>% map(modelbuilder::check_model()) 
+
+#df <- files %>% map(readRDS) 
+
+for (n in 1:length(files))
+{
+    mbmodel <- readRDS(files[n])
+    modelerror <- check_model(mbmodel)
+    if (is.null(modelerror))
+    {
+        df[n,"Title"]=mbmodel$title
+        df[n,"ShortDesc"]=mbmodel$description
+        df[n,"LongDesc"]=mbmodel$details
+        df[n,"Author"]=mbmodel$author
+        df[n,"Date"]=mbmodel$date
+    }
+    else #if model didn't pass check
+    {
+        df[n,"Title"]=mbmodel$title
+        df[n,"ShortDesc"]=modelerror
+    }
+}
+```
